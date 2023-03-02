@@ -67,8 +67,8 @@ def list_accounts():
     This endpoint will return a list of all Account as requested
     """
     app.logger.info("Request to list all Account")
-    # check_content_type("application/json")
     accounts = Account.all()
+    #serialize method in models should pack output in dict
     message = [account.serialize() for account in accounts]
     app.logger.info("Returning [%s] accounts", len(message))
     return jsonify(message), status.HTTP_200_OK
@@ -78,7 +78,20 @@ def list_accounts():
 # READ AN ACCOUNT
 ######################################################################
 
-# ... place you code here to READ an account ...
+@app.route("/accounts/<int:id>", methods=["GET"])
+def read_account(id):
+    """
+    reads a created account
+    This endpoint will return Account information of requested id
+    """
+    app.logger.info("Request to read an Account")
+    account = Account.find(id)
+    #serialize method in models should pack output in dict
+    try:
+        message = account.serialize()
+        return jsonify(message), status.HTTP_200_OK
+    except AttributeError:
+        return jsonify({}), status.HTTP_404_NOT_FOUND
 
 
 ######################################################################
