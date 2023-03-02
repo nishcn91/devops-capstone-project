@@ -98,7 +98,20 @@ def read_account(id):
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
 
-# ... place you code here to UPDATE an account ...
+@app.route("/accounts/<int:id>", methods=["PUT"])
+def read_account(id):
+    """
+    updates a created account
+    This endpoint will return updated Account information of requested id
+    """
+    app.logger.info("Request to update an Account")
+    account = Account.find(id)
+    #serialize method in models should pack output in dict
+    try:
+        message = account.serialize()
+        return jsonify(message), status.HTTP_200_OK
+    except AttributeError:
+        return jsonify({}), status.HTTP_404_NOT_FOUND
 
 
 ######################################################################
