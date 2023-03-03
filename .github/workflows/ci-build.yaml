@@ -20,7 +20,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_PASSWORD: pgs3cr3t
-          PoSTGRES_DB: testdb
+          POSTGRES_DB: testdb
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - name: Checkout
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
 
       - name: Install Dependencies
         run: |
@@ -42,7 +42,6 @@ jobs:
           flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Run unit tests with Nose
-        run: |
-          nosetests -vv --with-spec --spec-color --with-coverage --cover-package=service
+        run: nosetests
         env:
           DATABASE_URI: "postgresql://postgres:pgs3cr3t@postgres:5432/testdb"
