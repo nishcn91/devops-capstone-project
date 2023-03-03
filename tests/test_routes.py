@@ -125,15 +125,15 @@ class TestAccountService(TestCase):
 
     # ADD YOUR TEST CASES HERE ...
     def test_get_account_list(self):
-        """It should list all the accounts that has been created""" 
+        """It should list all the accounts that has been created"""
         self._create_accounts(5)
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
         self.assertEqual(len(data), 5)
-    
+
     def test_get_empty_account_list(self):
-        """It should return an empty list""" 
+        """It should return an empty list"""
         response = self.client.get(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         data = response.get_json()
@@ -142,19 +142,19 @@ class TestAccountService(TestCase):
     def test_read_an_account(self):
         """It should read an account information that has been created"""
         account = self._create_accounts(1)[0]
-        response = self.client.get(f"{BASE_URL}/{account.id}",content_type="application/json")
-        
+        response = self.client.get(f"{BASE_URL}/{account.id}", content_type="application/json")
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.get_json()["name"], account.name)
-    
-    def test_read_an_account(self):
-        """It should not read an account information that has not been created"""
-        account = self._create_accounts(1)[0]
 
-        response = self.client.get(f"{BASE_URL}/{2}",content_type="application/json")
+    def test_read_an_invalid_account(self):
+        """It should not read an account information that has not been created"""
+        self._create_accounts(1)[0]
+
+        response = self.client.get(f"{BASE_URL}/{2}", content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-        response = self.client.get(f"{BASE_URL}/{'2.3'}",content_type="application/json")
+        response = self.client.get(f"{BASE_URL}/{'2.3'}", content_type="application/json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_an_account(self):
@@ -163,47 +163,41 @@ class TestAccountService(TestCase):
         response = self.client.post(BASE_URL,
                                     json=account.serialize(),
                                     content_type="application/json")
-        
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         new_account = response.get_json()
-        new_account["name"]="DummyTest"
-        new_response = self.client.put(f"{BASE_URL}/{new_account['id']}",
-                                    json=new_account, 
-                                    content_type="application/json")
+        new_account["name"] = "DummyTest"
+        new_response = self.client.put(f"{BASE_URL}/{new_account['id']}", json=new_account, content_type="application/json")
         self.assertEqual(new_response.status_code, status.HTTP_200_OK)
 
         updated_account = new_response.get_json()
-        self.assertEqual(updated_account["name"],"DummyTest")
+        self.assertEqual(updated_account["name"], "DummyTest")
 
     def test_update_an_invalid_account(self):
         """It should not be able to update account since its not available"""
         account = AccountFactory()
-        response = self.client.post(BASE_URL,
-                                    json=account.serialize(),
-                                    content_type="application/json")
-        
+        response = self.client.post(BASE_URL, json=account.serialize(), content_type="application/json")
+
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         new_account = response.get_json()
-        new_account["name"]="DummyTest"
-        new_response = self.client.put(f"{BASE_URL}/{21}",
-                                    json=new_account, 
-                                    content_type="application/json")
+        new_account["name"] = "DummyTest"
+        new_response = self.client.put(f"{BASE_URL}/{21}", json=new_account, content_type="application/json")
         self.assertEqual(new_response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_account(self):
         """It should Delete an Account"""
         account = self._create_accounts(1)[0]
         response = self.client.delete(f"{BASE_URL}/{account.id}")
-        
+
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_delete_invalid_account(self):
         """It should not delete an non existing Account"""
-        account = self._create_accounts(1)[0]
+        self._create_accounts(1)[0]
         response = self.client.delete(f"{BASE_URL}/{12}")
-        
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_invalid_method(self):
