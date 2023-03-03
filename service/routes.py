@@ -118,7 +118,19 @@ def update_account(id):
 # DELETE AN ACCOUNT
 ######################################################################
 
-# ... place you code here to DELETE an account ...
+@app.route("/accounts/<int:id>", methods=["DELETE"])
+def delete_account(id):
+    """
+    deletes a created account
+    This endpoint will delete Account information of requested id
+    """
+    app.logger.info("Request to delete an Account")
+    account = Account.find(id)
+    #serialize method in models should pack output in dict
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND, f"Account with requested id {id} not found. Aborting..")
+    account.delete()
+    return jsonify(""),status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
