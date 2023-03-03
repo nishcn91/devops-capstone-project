@@ -87,11 +87,9 @@ def read_account(id):
     app.logger.info("Request to read an Account")
     account = Account.find(id)
     #serialize method in models should pack output in dict
-    try:
-        message = account.serialize()
-        return jsonify(message), status.HTTP_200_OK
-    except AttributeError:
-        return jsonify({}), status.HTTP_404_NOT_FOUND
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND, f"Account with requested id {id} not found. Aborting..")
+    return account.serialize(), status.HTTP_200_OK
 
 
 ######################################################################
@@ -99,19 +97,21 @@ def read_account(id):
 ######################################################################
 
 @app.route("/accounts/<int:id>", methods=["PUT"])
-def read_account(id):
+def update_account(id):
     """
     updates a created account
     This endpoint will return updated Account information of requested id
     """
     app.logger.info("Request to update an Account")
     account = Account.find(id)
-    #serialize method in models should pack output in dict
-    try:
-        message = account.serialize()
-        return jsonify(message), status.HTTP_200_OK
-    except AttributeError:
-        return jsonify({}), status.HTTP_404_NOT_FOUND
+    
+    if not account:
+        abort(status.HTTP_404_NOT_FOUND,f"Account with {id} not found in records")
+    account.deserialize(request.get_json())
+    account.update()
+    # serialize method in models should pack output in dict
+    output = account.serialize()
+    return jsonify(output), status.HTTP_200_OK
 
 
 ######################################################################
