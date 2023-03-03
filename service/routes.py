@@ -57,6 +57,7 @@ def create_accounts():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+
 ######################################################################
 # LIST ALL ACCOUNTS
 ######################################################################
@@ -68,7 +69,7 @@ def list_accounts():
     """
     app.logger.info("Request to list all Account")
     accounts = Account.all()
-    #serialize method in models should pack output in dict
+    # serialize method in models should pack output in dict
     message = [account.serialize() for account in accounts]
     app.logger.info("Returning [%s] accounts", len(message))
     return jsonify(message), status.HTTP_200_OK
@@ -86,7 +87,7 @@ def read_account(id):
     """
     app.logger.info("Request to read an Account")
     account = Account.find(id)
-    #serialize method in models should pack output in dict
+    # serialize method in models should pack output in dict
     if not account:
         abort(status.HTTP_404_NOT_FOUND, f"Account with requested id {id} not found. Aborting..")
     return account.serialize(), status.HTTP_200_OK
@@ -104,9 +105,9 @@ def update_account(id):
     """
     app.logger.info("Request to update an Account")
     account = Account.find(id)
-    
+
     if not account:
-        abort(status.HTTP_404_NOT_FOUND,f"Account with {id} not found in records")
+        abort(status.HTTP_404_NOT_FOUND, f"Account with {id} not found in records")
     account.deserialize(request.get_json())
     account.update()
     # serialize method in models should pack output in dict
@@ -126,11 +127,11 @@ def delete_account(id):
     """
     app.logger.info("Request to delete an Account")
     account = Account.find(id)
-    #serialize method in models should pack output in dict
+    # serialize method in models should pack output in dict
     if not account:
         abort(status.HTTP_404_NOT_FOUND, f"Account with requested id {id} not found. Aborting..")
     account.delete()
-    return jsonify(""),status.HTTP_204_NO_CONTENT
+    return jsonify(""), status.HTTP_204_NO_CONTENT
 
 
 ######################################################################
