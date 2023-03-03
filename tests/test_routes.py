@@ -168,8 +168,27 @@ class TestAccountService(TestCase):
 
         new_account = response.get_json()
         new_account["name"]="DummyTest"
-        new_response = self.client.post(BASE_URL,
-                                    json=new_account.serialize(),
+        new_response = self.client.put(f"{BASE_URL}/{new_account['id']}",
+                                    json=new_account, 
                                     content_type="application/json")
         self.assertEqual(new_response.status_code, status.HTTP_200_OK)
+
+        updated_account = new_response.get_json()
+        self.assertEqual(updated_account["name"],"DummyTest")
+
+    def test_update_an_invalid_account(self):
+        """It should not be able to update account since its not available"""
+        account = AccountFactory()
+        response = self.client.post(BASE_URL,
+                                    json=account.serialize(),
+                                    content_type="application/json")
+        
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        new_account = response.get_json()
+        new_account["name"]="DummyTest"
+        new_response = self.client.put(f"{BASE_URL}/{21}",
+                                    json=new_account, 
+                                    content_type="application/json")
+        self.assertEqual(new_response.status_code, status.HTTP_404_NOT_FOUND)
 
