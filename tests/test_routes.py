@@ -210,7 +210,7 @@ class TestAccountService(TestCase):
         response = self.client.delete(BASE_URL)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    def test_environ_override(self):
+    def test_https(self):
         """It should return headers matching https"""
         response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -223,3 +223,9 @@ class TestAccountService(TestCase):
             }
         for k, v in headers.items():
             self.assertEqual(response.headers.get(k), v)
+
+    def test_cors(self):
+        """It should return access control allow origin in headers"""
+        response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
